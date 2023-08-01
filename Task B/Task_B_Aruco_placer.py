@@ -3,7 +3,7 @@ import copy
 import cv2 as cv
 import cv2.aruco as aruco
 
-task = cv.imread("D:\RoboISM\Main Tasks\OpenCV\Task B\CVTask.png")
+task = cv.imread("D:\RoboISM\Main Tasks\OpenCV\Tasks\Task B\CVTask.png")
 
 def rotateMarker(img, angle, scale = 1):
     img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
@@ -15,10 +15,10 @@ def rotateMarker(img, angle, scale = 1):
     return rotatedImg
 
 markers = {}
-markers[0] = cv.imread('D:\RoboISM\Main Tasks\OpenCV\Task B\LAMO.jpg')
-markers[1] = cv.imread('D:\RoboISM\Main Tasks\OpenCV\Task B\XD.jpg')
-markers[2] = cv.imread('D:\RoboISM\Main Tasks\OpenCV\Task B\Ha.jpg')
-markers[3] = cv.imread('D:\RoboISM\Main Tasks\OpenCV\Task B\HaHa.jpg')
+markers[0] = cv.imread('D:\RoboISM\Main Tasks\OpenCV\Tasks\Task B\LAMO.jpg')
+markers[1] = cv.imread('D:\RoboISM\Main Tasks\OpenCV\Tasks\Task B\XD.jpg')
+markers[2] = cv.imread('D:\RoboISM\Main Tasks\OpenCV\Tasks\Task B\Ha.jpg')
+markers[3] = cv.imread('D:\RoboISM\Main Tasks\OpenCV\Tasks\Task B\HaHa.jpg')
 squareAngles = []  # acc. to aruco ids 1,2,3,4 -> 8,7,4,5
 markerAngles = []
 imageIds = [8,7,4,5]
@@ -130,17 +130,6 @@ for i in range(len(croppedMarkers)):
     maskInv = cv.bitwise_not(mask)
     masksInv.append(maskInv)
 
-    
-# croppedMarkers[0] = croppedMarkers[0][:,:349]
-# croppedMarkers[2] = croppedMarkers[2][:274,:274]
-# croppedMarkers[3] = croppedMarkers[3][:,:504]
-# masks[0] = masks[0][:,:349]
-# masks[2] = masks[2][:274,:274]
-# masks[3] = masks[3][:,:504]
-# masksInv[0] = masksInv[0][:,:349]
-# masksInv[2] = masksInv[2][:274,:274]
-# masksInv[3] = masksInv[3][:,:504]  
-
 for i in range(len(masks)):
    
     x,y,w,h = boundingBoxesImg[i]
@@ -158,7 +147,7 @@ for i in range(len(masks)):
     place = cv.add((cropImg),cv.cvtColor(cropMark, cv.COLOR_GRAY2BGR))
     task[y-1:y+h+1,x-1:x+w+1] = place
 
-cv.imwrite("D:\RoboISM\Main Tasks\OpenCV\Task B\CVTask_done.png", task)
+cv.imwrite("D:\RoboISM\Main Tasks\OpenCV\Tasks\Task B\CVTask_done.png", task)
 
 cv.imshow('Task',task)
 cv.waitKey(0)
