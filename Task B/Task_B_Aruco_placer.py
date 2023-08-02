@@ -5,6 +5,8 @@ import cv2.aruco as aruco
 
 task = cv.imread("D:\RoboISM\Main Tasks\OpenCV\Tasks\Task B\CVTask.png")
 
+""""Function to rotate and scale images"""
+
 def rotateMarker(img, angle, scale = 1):
     img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     img = cv.bitwise_not(img)
@@ -14,11 +16,14 @@ def rotateMarker(img, angle, scale = 1):
     rotatedImg = cv.bitwise_not(cv.warpAffine(img, RotMat, (w, h)))
     return rotatedImg
 
+"""Loading the images"""
+
 markers = {}
 markers[0] = cv.imread('D:\RoboISM\Main Tasks\OpenCV\Tasks\Task B\LAMO.jpg')
 markers[1] = cv.imread('D:\RoboISM\Main Tasks\OpenCV\Tasks\Task B\XD.jpg')
 markers[2] = cv.imread('D:\RoboISM\Main Tasks\OpenCV\Tasks\Task B\Ha.jpg')
 markers[3] = cv.imread('D:\RoboISM\Main Tasks\OpenCV\Tasks\Task B\HaHa.jpg')
+
 squareAngles = []  # acc. to aruco ids 1,2,3,4 -> 8,7,4,5
 markerAngles = []
 imageIds = [8,7,4,5]
@@ -28,6 +33,8 @@ minBoxes = []
 boundingBoxesImg = []
 croppedMarkers = []
 
+"""Initializing the detector and determining the ids of the markers"""
+
 Aruco = aruco.ArucoDetector(aruco.getPredefinedDictionary(aruco.DICT_5X5_50),
                             aruco.DetectorParameters())
 for i in range(len(markers)):
@@ -36,6 +43,8 @@ for i in range(len(markers)):
     aruco.drawDetectedMarkers(marker, corners, ids, [0,0,255])
     cv.imshow('marker',marker)
     cv.waitKey(0)
+    
+"""Finding Contours of in the task image"""
 
 img = copy.deepcopy(task)
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
@@ -45,6 +54,8 @@ canny = cv.Canny(blur, threshold1 = 50, threshold2= 70)
 imgContours, hierarchy = cv.findContours(canny, 
                                       mode = cv.RETR_EXTERNAL, 
                                       method= cv.CHAIN_APPROX_SIMPLE)
+
+"""To find the hierarchy of task image rectangles"""
 
 for i in range(len(imgContours)):
     cnt = cv.drawContours(img, imgContours, i, 
@@ -76,6 +87,8 @@ cv.waitKey(0)
 
 print('Image Bounding Boxes : \n', boundingBoxesImg)
 
+"""Calculating the angles of task image squares and markers"""
+
 for i in range(len(imageIds)):
     _,_, squareAngle = cv.minAreaRect(imgContours[imageIds[i]])
     cntA = cv.contourArea(imgContours[imageIds[i]]) 
@@ -94,6 +107,8 @@ print('Marker Areas : ', markerAreas)
 print("Contour Angles : ", squareAngles)  
 print("Marker Angles : ", markerAngles)
 
+"""Correcting the orientation and scale according to the task image"""
+
 scale = (np.divide(contourAreas, markerAreas))**0.5
 correctMarkers = []
 boundingBoxesMarker = []
@@ -110,6 +125,8 @@ for i in correctMarkers:
 
 print('Marker Bounding Boxes : \n', boundingBoxesMarker)
 
+"""Creating crops of squares from task image and storing their bounding boxes"""
+
 for i in range(len(boundingBoxesMarker)):
     x,y,w,h = boundingBoxesMarker[i]
     crop = correctMarkers[i][y-1:y+h+1,x-1:x+w+1]
@@ -120,6 +137,7 @@ for i in range(len(boundingBoxesMarker)):
     minBox = cv.boxPoints(minRect)
     minBoxMarker.append(minBox)
 
+"""Creating Mask and Inverse Mask for each square"""
 
 masks = []
 masksInv = []
@@ -130,6 +148,8 @@ for i in range(len(croppedMarkers)):
     maskInv = cv.bitwise_not(mask)
     masksInv.append(maskInv)
 
+"""Applying the masks to cropped Task images and markers""" 
+
 for i in range(len(masks)):
    
     x,y,w,h = boundingBoxesImg[i]
@@ -139,18 +159,23 @@ for i in range(len(masks)):
     masks[i] = masks[i][:shape_x,:shape_y]
     masksInv[i] = masksInv[i][:shape_x,:shape_y]
 
-    print(crop.shape, croppedMarkers[i].shape, masks[i].shape, masksInv[i].shape)
+    print(crop.shape, croppedMarkers[i].shape, masks[i].shape, masksInv[i].shape) #Checking dimension of crops, markers and masks.
+    
     mask = copy.deepcopy(masks[i])
     maskInv = copy.deepcopy(masksInv[i])
     cropImg = cv.bitwise_and(crop, crop, mask = maskInv)
     cropMark = cv.bitwise_and(croppedMarkers[i], croppedMarkers[i], mask =  mask)
-    place = cv.add((cropImg),cv.cvtColor(cropMark, cv.COLOR_GRAY2BGR))
+    place = cv.add((cropImg),cv.cvtColor(cropMark, cv.COLOR_GRAY2BGR))  #Adding the images
     task[y-1:y+h+1,x-1:x+w+1] = place
 
-cv.imwrite("D:\RoboISM\Main Tasks\OpenCV\Tasks\Task B\CVTask_done.png", task)
+cv.imwrite("D:\RoboISM\Main Tasks\OpenCV\Tasks\Task B\CVTask_done.png", task) #Storing the result image
+
+""""Showing the result image"""
 
 cv.imshow('Task',task)
 cv.waitKey(0)
+
+"""Showing the marker ids on the result image"""
 
 corners, ids, _ = Aruco.detectMarkers(task)
 aruco.drawDetectedMarkers(task, corners, ids, [0,0,255])
