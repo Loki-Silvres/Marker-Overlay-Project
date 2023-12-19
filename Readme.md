@@ -9,6 +9,7 @@ The two tasks A and B have successfully been accomplished. The folders contain t
 #### - Basic OpenCV Functions
 #### - Numpy manipulation of images
 #### - Image rotation and scaling
+#### - Callback setup
 #### - Aruco Detection
 #### - Contour Detection
 #### - Bit-Mask Manipulation
