@@ -1,5 +1,5 @@
-# Image Manipulation using OpenCV
-OpenCV Task by RoboISM
+# Marker Overlay Project
+Image manipulation using OpenCV
 
 ## Description
 #### This repository consists of the solution for the OpenCV task given by club RoboISM in the month of July 2023. 
